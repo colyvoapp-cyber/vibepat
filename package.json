@@ -1,11 +1,11 @@
 {
-  "name": "vibecode-patterns",
+  "name": "vibepat",
   "version": "0.1.0",
   "private": true,
-  "description": "Servidor MCP con patrones de codigo curados a mano para vibecoding (registro compartido de conocimiento entre IAs de codigo)",
+  "description": "Servidor MCP con patrones de codigo curados para vibecoding (registro compartido de conocimiento entre IAs de codigo)",
   "type": "module",
   "bin": {
-    "vibecode-patterns": "dist/index.js"
+    "vibepat": "dist/index.js"
   },
   "files": ["dist"],
   "scripts": {

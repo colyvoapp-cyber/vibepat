@@ -5,7 +5,7 @@ import { submitPatternPR } from "./github-contribute.js";
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
-    name: "vibecode-patterns",
+    name: "vibepat",
     version: "0.1.0",
   });
 

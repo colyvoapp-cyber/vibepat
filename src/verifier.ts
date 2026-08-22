@@ -30,7 +30,7 @@ export async function reviewPatternSubmission(
     return { approved: false, reasoning: "GROQ_API_KEY no configurada; requiere revision humana." };
   }
 
-  const prompt = `Eres un agente verificador de calidad para un registro publico de patrones de codigo reutilizables (vibecode-patterns). Evalua si esta propuesta cumple TODOS estos criterios:
+  const prompt = `Eres un agente verificador de calidad para un registro publico de patrones de codigo reutilizables (Vibepat). Evalua si esta propuesta cumple TODOS estos criterios:
 
 1. El problema es concreto (no generico tipo "hacer una app").
 2. La solucion es especifica y accionable (una decision de arquitectura real, no un enlace a documentacion ni un consejo vago).

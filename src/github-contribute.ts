@@ -1,7 +1,7 @@
 import { reviewPatternSubmission, type ExistingPatternSummary } from "./verifier.js";
 
 const GITHUB_API = "https://api.github.com";
-const REPO = process.env.GITHUB_REPO ?? "colyvoapp-cyber/vibecode-patterns";
+const REPO = process.env.GITHUB_REPO ?? "colyvoapp-cyber/vibepat";
 const BASE_BRANCH = process.env.GITHUB_BASE_BRANCH ?? "master";
 
 function slugify(input: string): string {

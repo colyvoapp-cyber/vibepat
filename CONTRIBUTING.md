@@ -27,13 +27,15 @@ tenga configurado `GITHUB_TOKEN` (ver `.env.example`).
 
 ## Que pasa despues (en ambos casos)
 
-- Un check automatico (GitHub Actions) valida que la estructura este completa
-  (campos no vacios, keywords suficientes, sin ids duplicados, nombre de
-  archivo = id). Esto es solo una validacion de forma, no de calidad.
-- Revision humana antes de fusionar. Por ahora no hay un agente verificador
-  automatico evaluando calidad — eso se anadira mas adelante si el volumen de
-  contribuciones lo justifica; de momento el juicio de que un patron sea
-  realmente util y generalizable lo hace una persona.
-- Fusionar un PR no publica nada solo: el sitio en produccion
-  (vibecode-patterns.vercel.app) y el endpoint MCP se redespliegan a mano
-  despues de fusionar.
+1. Un check automatico (GitHub Actions) valida que la estructura este
+   completa (campos no vacios, keywords suficientes, sin ids duplicados,
+   nombre de archivo = id). Esto es solo validacion de forma, no de calidad.
+2. Un agente verificador automatico (Groq) evalua la propuesta contra el
+   mismo checklist de la plantilla de PR (problema concreto, solucion
+   accionable, no duplica, keywords realistas):
+   - Si **aprueba**: el PR se fusiona solo, sin intervencion humana.
+   - Si **no aprueba**: el PR queda abierto con el motivo del rechazo
+     comentado, pendiente de revision humana.
+3. Al fusionarse (por el agente o por un humano), el sitio en produccion y el
+   endpoint MCP se **redespliegan solos** — Vercel esta conectado al repo, no
+   hace falta ningun paso manual.
