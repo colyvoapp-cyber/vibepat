@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { patterns } from "./patterns.generated.js";
 import { submitPatternPR } from "./github-contribute.js";
+import { findBestPattern } from "./matcher.js";
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
@@ -20,36 +21,14 @@ export function createMcpServer(): McpServer {
       },
     },
     async ({ query }) => {
-      const normalize = (s: string) =>
-        s
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[̀-ͯ]/g, "");
-
-      const q = normalize(query);
-
-      const scored = patterns
-        .map((p) => {
-          let score = 0;
-          if (q.includes(normalize(p.category))) score += 2;
-          for (const kw of p.keywords) {
-            if (q.includes(normalize(kw))) score += kw.includes(" ") ? 3 : 1;
-          }
-          return { pattern: p, score };
-        })
-        .filter((s) => s.score > 0)
-        .sort((a, b) => b.score - a.score);
-
-      const match = scored[0]?.pattern;
+      const { match, availableTitles } = findBestPattern(query);
 
       if (!match) {
         return {
           content: [
             {
               type: "text" as const,
-              text: `No hay ningun patron curado todavia para "${query}". Patrones disponibles: ${patterns
-                .map((p) => p.title)
-                .join(", ")}.`,
+              text: `No hay ningun patron curado todavia para "${query}". Patrones disponibles: ${availableTitles.join(", ")}.`,
             },
           ],
         };
