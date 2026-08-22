@@ -79,7 +79,7 @@ export function createMcpServer(): McpServer {
     {
       title: "Proponer un patron nuevo",
       description:
-        "Propone un patron de codigo nuevo para el registro compartido (chat, migracion, marketplace, auth, etc.). Abre un Pull Request para revision humana — no se publica ni fusiona solo.",
+        "Propone un patron de codigo nuevo para el registro compartido (chat, migracion, marketplace, auth, etc.). Un agente verificador automatico lo revisa; si aprueba, se fusiona y publica solo. Si no, queda pendiente de revision humana.",
       inputSchema: {
         title: z.string().min(5).describe("Titulo corto del patron"),
         category: z
@@ -99,15 +99,13 @@ export function createMcpServer(): McpServer {
       try {
         const result = await submitPatternPR(
           { title, category, problem, solution, stack, keywords },
-          patterns.map((p) => p.id)
+          patterns.map((p) => ({ id: p.id, title: p.title, category: p.category }))
         );
+        const text = result.merged
+          ? `Propuesta aprobada por el agente verificador y fusionada automaticamente: ${result.url}\nMotivo: ${result.reasoning}\n\nSe esta desplegando solo (Vercel esta conectado al repo).`
+          : `Propuesta enviada, NO aprobada automaticamente por el agente verificador: ${result.url}\nMotivo: ${result.reasoning}\n\nQueda pendiente de revision humana.`;
         return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Propuesta enviada. Pendiente de revision humana antes de publicarse: ${result.url}`,
-            },
-          ],
+          content: [{ type: "text" as const, text }],
         };
       } catch (err) {
         return {

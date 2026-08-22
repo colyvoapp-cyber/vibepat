@@ -1,3 +1,5 @@
+import { reviewPatternSubmission, type ExistingPatternSummary } from "./verifier.js";
+
 const GITHUB_API = "https://api.github.com";
 const REPO = process.env.GITHUB_REPO ?? "colyvoapp-cyber/vibecode-patterns";
 const BASE_BRANCH = process.env.GITHUB_BASE_BRANCH ?? "master";
@@ -51,10 +53,10 @@ export interface PatternSubmission {
 
 export async function submitPatternPR(
   input: PatternSubmission,
-  existingIds: string[]
-): Promise<{ url: string; id: string }> {
+  existingPatterns: ExistingPatternSummary[]
+): Promise<{ url: string; id: string; merged: boolean; reasoning: string }> {
   let id = slugify(input.title);
-  if (existingIds.includes(id)) {
+  if (existingPatterns.some((p) => p.id === id)) {
     id = `${id}-${Date.now().toString(36)}`;
   }
 
@@ -103,10 +105,38 @@ export async function submitPatternPR(
         "",
         `**Categoria:** ${input.category}`,
         "",
-        "Revisa el checklist de la plantilla antes de fusionar. No se publica solo.",
+        "Revisado por el agente verificador automatico antes de fusionar.",
       ].join("\n"),
     }),
-  })) as { html_url: string };
+  })) as { html_url: string; number: number };
 
-  return { url: pr.html_url, id };
+  let merged = false;
+  let reasoning = "";
+
+  try {
+    const review = await reviewPatternSubmission(input, existingPatterns);
+    reasoning = review.reasoning;
+
+    if (review.approved) {
+      await gh(`/repos/${REPO}/pulls/${pr.number}/merge`, {
+        method: "PUT",
+        body: JSON.stringify({ merge_method: "squash" }),
+      });
+      await gh(`/repos/${REPO}/git/refs/heads/${branch}`, { method: "DELETE" }).catch(() => {});
+      merged = true;
+    } else {
+      await gh(`/repos/${REPO}/issues/${pr.number}/comments`, {
+        method: "POST",
+        body: JSON.stringify({
+          body: `Agente verificador: NO aprobado automaticamente.\n\nMotivo: ${review.reasoning}\n\nQueda pendiente de revision humana.`,
+        }),
+      });
+    }
+  } catch (err) {
+    reasoning = `No se pudo completar la revision automatica: ${
+      err instanceof Error ? err.message : String(err)
+    }`;
+  }
+
+  return { url: pr.html_url, id, merged, reasoning };
 }

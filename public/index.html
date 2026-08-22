@@ -309,7 +309,7 @@
 
       <section>
         <p class="eyebrow">Disponibles hoy</p>
-        <h2>5 patrones curados</h2>
+        <h2>6 patrones curados</h2>
         <div class="pattern-grid">
           <div class="pattern">
             <div class="pattern-head">
@@ -362,6 +362,17 @@
               Constraint UNIQUE sobre el id del evento antes de procesar, en
               la misma transaccion — evita duplicar cobros o emails cuando el
               proveedor reenvia el mismo evento.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Rate limiting por usuario</h3>
+              <span class="tag">api</span>
+            </div>
+            <p>
+              Token bucket en Redis (no en memoria del proceso) con headers
+              estandar desde el dia uno — no anadirlo despues de lanzar, rompe
+              a clientes existentes.
             </p>
           </div>
         </div>
