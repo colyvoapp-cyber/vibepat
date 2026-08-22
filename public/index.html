@@ -192,33 +192,6 @@
       }
       .pattern p { margin: 0; color: var(--muted); font-size: 0.93rem; }
 
-      /* Ask box */
-      .ask-box { display: grid; gap: 0.9rem; }
-      .ask-row { display: flex; gap: 0.6rem; }
-      #ask-input {
-        flex: 1;
-        font: inherit;
-        font-size: 0.95rem;
-        padding: 0.65rem 0.9rem;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        color: var(--fg);
-      }
-      #ask-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-      #ask-btn {
-        font: inherit;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #0b0e14;
-        background: var(--accent);
-        border: none;
-        border-radius: 8px;
-        padding: 0 1.2rem;
-        cursor: pointer;
-      }
-      #ask-btn:disabled { opacity: 0.6; cursor: default; }
-
       /* Connect box */
       .connect-box {
         border: 1px solid var(--border);
@@ -326,30 +299,17 @@
       </section>
 
       <section>
-        <p class="eyebrow">Pruebalo tu mismo</p>
-        <h2>Pregunta aqui</h2>
-        <p>
-          Esto llama al mismo motor que usa la tool <code>find_pattern</code> —
-          nada simulado, ni ningun LLM detras, solo para que veas que
-          respuesta obtendrias antes de conectar nada.
-        </p>
-        <div class="ask-box">
-          <div class="ask-row">
-            <input
-              id="ask-input"
-              type="text"
-              placeholder='Ej: "quiero un chat en tiempo real con presencia"'
-              autocomplete="off"
-            />
-            <button id="ask-btn">Preguntar</button>
-          </div>
-          <div id="ask-result" class="transcript" hidden></div>
+        <p class="eyebrow">Ejemplo real</p>
+        <h2>Que obtienes</h2>
+        <div class="transcript">
+          <p class="q">Tu: "Quiero montar un chat en tiempo real con estado de presencia (ver quien esta online)"</p>
+          <p class="a">La IA responde citando el patron guardado: usar un canal de suscripcion sobre Postgres (Supabase Realtime o LISTEN/NOTIFY) para los mensajes, y una tabla de presencia con heartbeat de TTL corto — en vez de montar WebSockets propios gestionados a mano.</p>
         </div>
       </section>
 
       <section>
         <p class="eyebrow">Disponibles hoy</p>
-        <h2>8 patrones curados</h2>
+        <h2>9 patrones curados</h2>
         <div class="pattern-grid">
           <div class="pattern">
             <div class="pattern-head">
@@ -436,6 +396,16 @@
               conserva historial y permite deshacer un borrado por error.
             </p>
           </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Feature flags server-side</h3>
+              <span class="tag">infra</span>
+            </div>
+            <p>
+              Evaluar flags en el servidor por usuario, no en el cliente —
+              permite apagar una funcionalidad en produccion sin redeploy.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -449,65 +419,19 @@
           </div>
           <pre><code id="cmd">claude mcp add --transport http vibepat https://vibepat.vercel.app/api/mcp</code></pre>
         </div>
+        <p>
+          Cada llamada necesita un <code>clientId</code> (cualquier
+          identificador estable tuyo, ej. tu usuario de GitHub): 1 consulta
+          gratis, luego hace falta haber contribuido al menos tanto como has
+          consultado para seguir. Contribuir es gratis, solo hace falta que el
+          agente verificador apruebe la propuesta.
+        </p>
       </section>
 
       <footer>
-        Fase de validacion manual. Sin cuentas, sin economia de creditos
-        todavia — solo lectura publica.
+        Fase de validacion. Sin cuentas — solo un identificador propio y un
+        ratio de reciprocidad entre consultar y aportar.
       </footer>
     </main>
-    <script>
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, function (c) {
-          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-        });
-      }
-
-      var askInput = document.getElementById("ask-input");
-      var askBtn = document.getElementById("ask-btn");
-      var askResult = document.getElementById("ask-result");
-
-      async function ask() {
-        var query = askInput.value.trim();
-        if (!query) return;
-
-        askBtn.disabled = true;
-        askBtn.textContent = "Buscando...";
-        askResult.hidden = false;
-        askResult.innerHTML =
-          '<p class="q">Tu: "' + escapeHtml(query) + '"</p><p class="a">Buscando...</p>';
-
-        try {
-          var res = await fetch("/api/ask", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: query }),
-          });
-          var data = await res.json();
-
-          if (data.found) {
-            askResult.innerHTML =
-              '<p class="q">Tu: "' + escapeHtml(query) + '"</p>' +
-              '<p class="a"><strong>' + escapeHtml(data.title) + "</strong><br><br>" +
-              escapeHtml(data.solution) + "</p>";
-          } else {
-            var list = (data.availableTitles || []).map(escapeHtml).join(", ");
-            askResult.innerHTML =
-              '<p class="q">Tu: "' + escapeHtml(query) + '"</p>' +
-              '<p class="a">Todavia no hay patron para esto. Disponibles hoy: ' + list + "</p>";
-          }
-        } catch (err) {
-          askResult.innerHTML = '<p class="a">Error al consultar el servidor. Intenta de nuevo.</p>';
-        } finally {
-          askBtn.disabled = false;
-          askBtn.textContent = "Preguntar";
-        }
-      }
-
-      askBtn.addEventListener("click", ask);
-      askInput.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") ask();
-      });
-    </script>
   </body>
 </html>

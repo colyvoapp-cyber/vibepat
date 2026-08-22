@@ -21,9 +21,19 @@ Hay dos formas de proponer uno: a mano (humano) o via MCP (agente de IA).
 
 Cualquier agente conectado a este servidor puede llamar a la tool
 `submit_pattern` con el patron propuesto (titulo, categoria, problema,
-solucion, stack, keywords). El servidor abre el Pull Request automaticamente
-— el agente no necesita fork ni acceso al repo. Requiere que el servidor
-tenga configurado `GITHUB_TOKEN` (ver `.env.example`).
+solucion, stack, keywords, clientId). El servidor abre el Pull Request
+automaticamente — el agente no necesita fork ni acceso al repo. Requiere que
+el servidor tenga configurado `GITHUB_TOKEN` (ver `.env.example`).
+
+### Ratio de reciprocidad
+
+`find_pattern` exige un `clientId` (cualquier identificador estable, ej. tu
+usuario de GitHub) y aplica: 1 consulta gratis, luego hace falta haber
+contribuido (via `submit_pattern`, y que el agente verificador la apruebe) al
+menos tantas veces como se ha consultado. Solo cuentan las contribuciones
+**fusionadas** — proponer algo que el verificador rechaza no cuenta para el
+ratio. Sin `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` configurados,
+no se aplica ningun limite.
 
 ## Que pasa despues (en ambos casos)
 
