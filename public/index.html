@@ -309,7 +309,7 @@
 
       <section>
         <p class="eyebrow">Disponibles hoy</p>
-        <h2>6 patrones curados</h2>
+        <h2>7 patrones curados</h2>
         <div class="pattern-grid">
           <div class="pattern">
             <div class="pattern-head">
@@ -373,6 +373,17 @@
               Token bucket en Redis (no en memoria del proceso) con headers
               estandar desde el dia uno — no anadirlo despues de lanzar, rompe
               a clientes existentes.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Paginacion por cursor</h3>
+              <span class="tag">database</span>
+            </div>
+            <p>
+              Keyset pagination (WHERE id &gt; ultimo_id) en vez de
+              OFFSET/LIMIT — evita lentitud y resultados inconsistentes en
+              listados grandes.
             </p>
           </div>
         </div>
