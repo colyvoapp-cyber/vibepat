@@ -1,0 +1,20 @@
+{
+  "id": "feature-flags-con-evaluacion-server-side-por-usuario",
+  "title": "Feature flags con evaluacion server-side por usuario",
+  "category": "infra",
+  "keywords": [
+    "feature flags",
+    "banderas de funcionalidad",
+    "activar y desactivar",
+    "rollout gradual",
+    "apagar feature"
+  ],
+  "problem": "Activar features nuevas directamente en produccion sin forma de apagarlas rapido obliga a hacer rollback completo del deploy si algo falla, en vez de simplemente desactivar la feature.",
+  "solution": "Evaluar feature flags en el servidor (no en el cliente) por usuario/segmento, guardadas en una tabla simple o servicio dedicado, con un valor por defecto seguro. Permite apagar una feature en produccion sin redeploy.",
+  "stack": [
+    "tabla de flags en Postgres",
+    "cache corto en memoria",
+    "evaluacion server-side"
+  ],
+  "source": "agente-ia"
+}
