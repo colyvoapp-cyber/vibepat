@@ -309,7 +309,7 @@
 
       <section>
         <p class="eyebrow">Disponibles hoy</p>
-        <h2>3 patrones curados</h2>
+        <h2>5 patrones curados</h2>
         <div class="pattern-grid">
           <div class="pattern">
             <div class="pattern-head">
@@ -340,6 +340,28 @@
               Dos roles desde el dia uno, maquina de estados para la
               transaccion, pagos con Stripe Connect y reputacion bidireccional
               — en vez de un unico modelo de usuario reescrito a medias.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Auth con multiples proveedores OAuth</h3>
+              <span class="tag">auth</span>
+            </div>
+            <p>
+              Separar "cuenta" e "identidad de login", vinculadas por email
+              verificado — en vez de crear una cuenta nueva cada vez que
+              alguien entra con un proveedor distinto.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Webhooks idempotentes</h3>
+              <span class="tag">webhooks</span>
+            </div>
+            <p>
+              Constraint UNIQUE sobre el id del evento antes de procesar, en
+              la misma transaccion — evita duplicar cobros o emails cuando el
+              proveedor reenvia el mismo evento.
             </p>
           </div>
         </div>

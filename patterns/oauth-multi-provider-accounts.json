@@ -1,13 +1,19 @@
 {
-  "id": "autenticacion-con-multiples-proveedores-oauth-sin-duplicar-c",
+  "id": "oauth-multi-provider-accounts",
   "title": "Autenticacion con multiples proveedores OAuth sin duplicar cuentas",
   "category": "auth",
   "keywords": [
     "oauth",
     "login social",
     "cuentas duplicadas",
+    "cuenta duplicada",
+    "duplicar cuentas",
     "multiples proveedores",
-    "vincular cuentas"
+    "vincular cuentas",
+    "google",
+    "github",
+    "iniciar sesion",
+    "auth"
   ],
   "problem": "Cuando una app permite login con Google, GitHub y email/password a la vez, es comun crear un registro de usuario nuevo cada vez que alguien entra con un proveedor distinto usando el mismo correo, generando cuentas duplicadas y perdida de datos asociados.",
   "solution": "Modelar 'cuenta' e 'identidad de login' como entidades separadas: una cuenta puede tener varias identidades (google, github, password) vinculadas por email verificado. Antes de crear una cuenta nueva, buscar por email verificado entre las identidades existentes y vincular en vez de duplicar.",

@@ -3,15 +3,20 @@ const REPO = process.env.GITHUB_REPO ?? "colyvoapp-cyber/vibecode-patterns";
 const BASE_BRANCH = process.env.GITHUB_BASE_BRANCH ?? "master";
 
 function slugify(input: string): string {
-  return (
-    input
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-+|-+$)/g, "")
-      .slice(0, 60) || `pattern-${Date.now()}`
-  );
+  const full = input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-+|-+$)/g, "");
+
+  if (full.length <= 60) return full || `pattern-${Date.now()}`;
+
+  // Corta por palabras completas en vez de a mitad de palabra.
+  const truncated = full.slice(0, 60);
+  const lastDash = truncated.lastIndexOf("-");
+  const clean = lastDash > 20 ? truncated.slice(0, lastDash) : truncated;
+  return clean.replace(/-+$/, "") || `pattern-${Date.now()}`;
 }
 
 async function gh(path: string, init?: RequestInit) {

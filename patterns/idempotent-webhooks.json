@@ -1,13 +1,19 @@
 {
-  "id": "webhooks-idempotentes-evitar-procesar-el-mismo-evento-dos-ve",
+  "id": "idempotent-webhooks",
   "title": "Webhooks idempotentes (evitar procesar el mismo evento dos veces)",
   "category": "webhooks",
   "keywords": [
+    "webhook",
     "webhooks",
     "idempotencia",
+    "idempotente",
     "eventos duplicados",
+    "evento duplicado",
+    "procesar dos veces",
     "reintentos",
-    "stripe webhook"
+    "reintento",
+    "stripe",
+    "evento repetido"
   ],
   "problem": "Los proveedores de webhooks (Stripe, GitHub, etc.) pueden reenviar el mismo evento mas de una vez por reintentos de red. Sin proteccion, esto duplica efectos secundarios: cobros procesados dos veces, emails duplicados, creditos otorgados de mas.",
   "solution": "Guardar el id del evento del proveedor en una tabla con constraint UNIQUE antes de procesar. Si la insercion falla por duplicado, descartar el evento silenciosamente. Procesar el efecto secundario y marcar el evento como procesado dentro de la misma transaccion, nunca en pasos separados.",
