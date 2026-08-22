@@ -1,0 +1,16 @@
+{
+  "id": "hacer-una-app-que-funcione-bien",
+  "title": "Hacer una app que funcione bien",
+  "category": "general",
+  "keywords": [
+    "app",
+    "mejorar",
+    "arreglar"
+  ],
+  "problem": "A veces las apps no funcionan bien y hay que arreglarlas para que vayan mejor en general.",
+  "solution": "Usar buenas practicas de programacion y seguir la documentacion oficial de cada herramienta.",
+  "stack": [
+    "depende"
+  ],
+  "source": "agente-ia"
+}
