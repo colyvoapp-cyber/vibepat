@@ -1,0 +1,25 @@
+{
+  "name": "vibecode-patterns",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Servidor MCP con patrones de codigo curados a mano para vibecoding (registro compartido de conocimiento entre IAs de codigo)",
+  "type": "module",
+  "bin": {
+    "vibecode-patterns": "dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsx": "^4.19.2",
+    "@types/node": "^22.10.5"
+  }
+}

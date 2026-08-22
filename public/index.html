@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vibecode-patterns</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0b0e14;
+        --bg-2: #0d1117;
+        --fg: #e6edf3;
+        --muted: #8b949e;
+        --card: #131820;
+        --card-2: #161b22;
+        --border: #262c36;
+        --accent: #58a6ff;
+        --accent-2: #7ee787;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #ffffff;
+          --bg-2: #f6f8fa;
+          --fg: #1b1f24;
+          --muted: #57606a;
+          --card: #ffffff;
+          --card-2: #f6f8fa;
+          --border: #d0d7de;
+          --accent: #0969da;
+          --accent-2: #1a7f37;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 1.25rem 5rem;
+      }
+
+      /* Hero */
+      .hero {
+        background:
+          radial-gradient(60% 50% at 15% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent),
+          linear-gradient(180deg, var(--bg-2), var(--bg));
+        border-bottom: 1px solid var(--border);
+        padding: 4.5rem 1.25rem 3.5rem;
+        margin: 0 -1.25rem 3rem;
+      }
+      .hero-inner { max-width: 760px; margin: 0 auto; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--accent-2);
+        background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+        border: 1px solid color-mix(in srgb, var(--accent-2) 35%, transparent);
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        margin-bottom: 1.25rem;
+      }
+      .badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent-2);
+      }
+      .logo-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #0b0e14;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 1.25rem;
+      }
+      h1 {
+        font-size: clamp(1.9rem, 4vw, 2.4rem);
+        margin: 0 0 0.9rem;
+        letter-spacing: -0.02em;
+      }
+      .tagline {
+        color: var(--muted);
+        margin: 0;
+        font-size: 1.05rem;
+        max-width: 46ch;
+      }
+
+      section { margin-bottom: 3rem; }
+      .eyebrow {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--accent);
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.3rem;
+        margin: 0 0 1rem;
+      }
+      p { margin: 0 0 0.9rem; }
+      section > p:last-child { margin-bottom: 0; }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.85em;
+      }
+
+      /* Steps */
+      .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+      .steps li {
+        display: grid;
+        grid-template-columns: 2.25rem 1fr;
+        gap: 1rem;
+        align-items: start;
+      }
+      .steps .n {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: var(--card-2);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 0.95rem;
+      }
+      .steps strong { display: block; margin-bottom: 0.15rem; }
+      .steps span { color: var(--muted); font-size: 0.95rem; }
+
+      /* Transcript */
+      .transcript {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .transcript .q, .transcript .a {
+        padding: 1rem 1.25rem;
+        font-size: 0.92rem;
+      }
+      .transcript .q {
+        background: var(--card-2);
+        font-weight: 600;
+        border-bottom: 1px solid var(--border);
+      }
+      .transcript .a {
+        background: var(--card);
+        color: var(--muted);
+      }
+
+      /* Pattern cards */
+      .pattern-grid { display: grid; gap: 0.9rem; }
+      .pattern {
+        border: 1px solid var(--border);
+        background: var(--card);
+        border-radius: 12px;
+        padding: 1.1rem 1.3rem;
+      }
+      .pattern-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.4rem;
+      }
+      .pattern h3 { margin: 0; font-size: 1.05rem; }
+      .tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        white-space: nowrap;
+      }
+      .pattern p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+
+      /* Connect box */
+      .connect-box {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card-2);
+        overflow: hidden;
+      }
+      .connect-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .connect-box pre {
+        margin: 0;
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        font-size: 0.85rem;
+      }
+      .copy-btn {
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--accent);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.25rem 0.6rem;
+        cursor: pointer;
+      }
+      .copy-btn:hover { border-color: var(--accent); }
+
+      a { color: var(--accent); }
+      footer {
+        color: var(--muted);
+        font-size: 0.85rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="logo-mark">vp</div>
+        <div><span class="badge">Fase de validacion — nombre provisional</span></div>
+        <h1>vibecode-patterns</h1>
+        <p class="tagline">
+          Antes de que tu IA invente una solucion desde cero para un problema
+          comun, esto le deja consultar si alguien ya lo resolvio bien.
+        </p>
+      </div>
+    </div>
+
+    <main>
+      <section>
+        <p class="eyebrow">¿Que es esto?</p>
+        <h2>Para gente que programa con IA</h2>
+        <p>
+          Es para programadores que usan una IA (Claude, ChatGPT, Cursor...)
+          para escribir codigo. Cuando le pides a esa IA algo que ya se ha
+          resuelto bien muchas veces antes, en vez de que se lo invente desde
+          cero en ese momento, esto le da la solucion ya probada para que la
+          use como base.
+        </p>
+        <p>
+          Si no programas con ayuda de una IA, esto no es para ti todavia —
+          es una herramienta tecnica, no una app de consumo.
+        </p>
+      </section>
+
+      <section>
+        <p class="eyebrow">El problema</p>
+        <h2>Cada sesion de IA empieza de cero</h2>
+        <p>
+          Cuando le pides a una IA de codigo algo como "monta un chat en
+          tiempo real" o "migra este prototipo a produccion", normalmente
+          improvisa una solucion en esa misma conversacion — y en varias cosas
+          (tiempo real, migraciones, marketplaces) esa solucion improvisada
+          suele ser fragil y hay que rehacerla mas adelante. Este proyecto es
+          una lista de soluciones ya probadas para esos casos concretos.
+        </p>
+      </section>
+
+      <section>
+        <p class="eyebrow">Como funciona</p>
+        <h2>3 pasos</h2>
+        <ol class="steps">
+          <li>
+            <span class="n">1</span>
+            <span><strong>Conectas el servidor una vez</strong><span>a tu herramienta de IA compatible con MCP (ej. Claude Code), con el comando de mas abajo.</span></span>
+          </li>
+          <li>
+            <span class="n">2</span>
+            <span><strong>Le pides algo normal</strong><span>en tu idioma, como siempre — "quiero un chat con gente conectada en tiempo real".</span></span>
+          </li>
+          <li>
+            <span class="n">3</span>
+            <span><strong>La IA consulta el registro sola</strong><span>si hay un patron guardado para lo que pediste, lo usa como base en vez de improvisar. No haces nada mas.</span></span>
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <p class="eyebrow">Ejemplo real</p>
+        <h2>Que obtienes</h2>
+        <div class="transcript">
+          <p class="q">Tu: "Quiero montar un chat en tiempo real con estado de presencia (ver quien esta online)"</p>
+          <p class="a">La IA responde citando el patron guardado: usar un canal de suscripcion sobre Postgres (Supabase Realtime o LISTEN/NOTIFY) para los mensajes, y una tabla de presencia con heartbeat de TTL corto — en vez de montar WebSockets propios gestionados a mano.</p>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Disponibles hoy</p>
+        <h2>3 patrones curados</h2>
+        <div class="pattern-grid">
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Chat en tiempo real con presencia</h3>
+              <span class="tag">realtime</span>
+            </div>
+            <p>
+              Postgres/Supabase Realtime + tabla de presencia con heartbeat,
+              en vez de WebSockets propios gestionados a mano.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Migracion de prototipo IA a produccion</h3>
+              <span class="tag">migration</span>
+            </div>
+            <p>
+              Migrar el conocimiento (modelo de datos, flujos validados), no
+              el codigo: reconstruir en capas en vez de reescribir a ciegas.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Marketplace de dos lados</h3>
+              <span class="tag">marketplace</span>
+            </div>
+            <p>
+              Dos roles desde el dia uno, maquina de estados para la
+              transaccion, pagos con Stripe Connect y reputacion bidireccional
+              — en vez de un unico modelo de usuario reescrito a medias.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <p class="eyebrow">Conectar</p>
+        <h2>Desde Claude Code</h2>
+        <div class="connect-box">
+          <div class="connect-head">
+            <span>Terminal</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('cmd').textContent); this.textContent='Copiado'; setTimeout(() => this.textContent='Copiar', 1500)">Copiar</button>
+          </div>
+          <pre><code id="cmd">claude mcp add --transport http vibecode-patterns https://vibecode-patterns.vercel.app/api/mcp</code></pre>
+        </div>
+      </section>
+
+      <footer>
+        Fase de validacion manual. Sin cuentas, sin economia de creditos
+        todavia — solo lectura publica.
+      </footer>
+    </main>
+  </body>
+</html>
