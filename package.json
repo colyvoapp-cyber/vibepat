@@ -9,10 +9,10 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/build-patterns.mjs && tsc",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
-    "validate": "npm run build && node scripts/validate-patterns.mjs"
+    "validate": "node scripts/build-patterns.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

@@ -3,6 +3,7 @@ name: Validate patterns
 on:
   pull_request:
     paths:
+      - "patterns/**"
       - "src/**"
       - "scripts/**"
 

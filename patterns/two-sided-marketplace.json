@@ -1,0 +1,24 @@
+{
+  "id": "two-sided-marketplace",
+  "title": "Marketplace de dos lados (oferta y demanda)",
+  "category": "marketplace",
+  "keywords": [
+    "marketplace",
+    "dos lados",
+    "compradores y vendedores",
+    "oferta y demanda",
+    "matching",
+    "comision",
+    "pagos entre usuarios",
+    "stripe connect",
+    "reservas",
+    "pedidos",
+    "proveedores y clientes",
+    "plataforma de intermediacion",
+    "dos roles"
+  ],
+  "problem": "Un marketplace de dos lados (compradores/vendedores, conductores/pasajeros, proveedores/clientes) no es un CRUD simple: hace falta modelar dos roles distintos desde el inicio, un ciclo de vida de transaccion con estados (solicitado, aceptado, en curso, completado, disputado), pagos divididos con comision de plataforma, y reputacion bidireccional. Los prototipos suelen empezar con un unico modelo de 'usuario' y una tabla de pagos basica, y hay que reescribir el modelo de datos entero y la integracion de pagos cuando toca llevarlo a produccion de verdad.",
+  "solution": "Modelar los dos roles desde el dia uno (perfiles de comprador/vendedor ligados a una misma cuenta, no un booleano en la tabla de usuarios). Usar una maquina de estados explicita para cada transaccion (no solo booleanos), con historial y timestamps para poder auditar disputas. Para pagos, usar un procesador con soporte nativo de marketplace (ej. Stripe Connect) que gestione comision y reparto entre las partes en vez de montarlo a mano sobre un Stripe basico. Las valoraciones deben ser bidireccionales y solo permitidas sobre transacciones ya completadas, para evitar reviews falsas.",
+  "stack": ["Postgres", "Stripe Connect", "busqueda/filtrado (Postgres full-text o Algolia)"],
+  "source": "curado-manual"
+}

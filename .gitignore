@@ -1,3 +1,4 @@
 .vercel
 node_modules
 dist
+src/patterns.generated.ts

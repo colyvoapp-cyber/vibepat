@@ -1,0 +1,22 @@
+{
+  "id": "realtime-chat-presence",
+  "title": "Chat en tiempo real con presencia",
+  "category": "realtime",
+  "keywords": [
+    "chat",
+    "tiempo real",
+    "presencia",
+    "online",
+    "en linea",
+    "quien esta conectado",
+    "websocket",
+    "mensajeria",
+    "mensajes",
+    "escribiendo",
+    "typing"
+  ],
+  "problem": "El chat en tiempo real con estado de presencia (quien esta online/escribiendo) es una de las funciones que casi nunca llega a produccion sin reescritura manual, sea cual sea la herramienta usada para prototiparlo: se suele resolver con parches fragiles en vez de una base solida desde el principio.",
+  "solution": "Usar un canal de suscripcion basado en Postgres (ej. Supabase Realtime o Postgres LISTEN/NOTIFY) para mensajes, y una tabla de presencia con heartbeat (TTL corto, ej. 10s) en vez de WebSockets propios gestionados a mano. Evita montar infraestructura de sockets custom salvo que el volumen lo justifique.",
+  "stack": ["Postgres", "Supabase Realtime o socket.io", "React"],
+  "source": "curado-manual"
+}

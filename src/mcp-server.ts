@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { patterns } from "./patterns.js";
+import { patterns } from "./patterns.generated.js";
+import { submitPatternPR } from "./github-contribute.js";
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
@@ -70,6 +71,55 @@ export function createMcpServer(): McpServer {
           },
         ],
       };
+    }
+  );
+
+  server.registerTool(
+    "submit_pattern",
+    {
+      title: "Proponer un patron nuevo",
+      description:
+        "Propone un patron de codigo nuevo para el registro compartido (chat, migracion, marketplace, auth, etc.). Abre un Pull Request para revision humana — no se publica ni fusiona solo.",
+      inputSchema: {
+        title: z.string().min(5).describe("Titulo corto del patron"),
+        category: z
+          .string()
+          .min(3)
+          .describe("Categoria corta, ej. realtime, migration, marketplace, auth, payments"),
+        problem: z.string().min(20).describe("Que problema resuelve, en detalle, y por que suele fallar"),
+        solution: z.string().min(20).describe("La solucion concreta y accionable (decision de arquitectura real)"),
+        stack: z.array(z.string()).min(1).describe("Stack sugerido"),
+        keywords: z
+          .array(z.string())
+          .min(3)
+          .describe("Al menos 3 palabras clave en espanol que alguien usaria al preguntar"),
+      },
+    },
+    async ({ title, category, problem, solution, stack, keywords }) => {
+      try {
+        const result = await submitPatternPR(
+          { title, category, problem, solution, stack, keywords },
+          patterns.map((p) => p.id)
+        );
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Propuesta enviada. Pendiente de revision humana antes de publicarse: ${result.url}`,
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `No se pudo enviar la propuesta: ${err instanceof Error ? err.message : String(err)}`,
+            },
+          ],
+          isError: true,
+        };
+      }
     }
   );
 
