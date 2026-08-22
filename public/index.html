@@ -309,7 +309,7 @@
 
       <section>
         <p class="eyebrow">Disponibles hoy</p>
-        <h2>7 patrones curados</h2>
+        <h2>8 patrones curados</h2>
         <div class="pattern-grid">
           <div class="pattern">
             <div class="pattern-head">
@@ -384,6 +384,16 @@
               Keyset pagination (WHERE id &gt; ultimo_id) en vez de
               OFFSET/LIMIT — evita lentitud y resultados inconsistentes en
               listados grandes.
+            </p>
+          </div>
+          <div class="pattern">
+            <div class="pattern-head">
+              <h3>Soft delete con deleted_at</h3>
+              <span class="tag">database</span>
+            </div>
+            <p>
+              Columna deleted_at en vez de DELETE — evita romper referencias,
+              conserva historial y permite deshacer un borrado por error.
             </p>
           </div>
         </div>
