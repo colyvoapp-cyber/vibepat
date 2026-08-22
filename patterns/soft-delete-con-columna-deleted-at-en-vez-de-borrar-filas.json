@@ -1,0 +1,20 @@
+{
+  "id": "soft-delete-con-columna-deleted-at-en-vez-de-borrar-filas",
+  "title": "Soft delete con columna deleted_at en vez de borrar filas",
+  "category": "database",
+  "keywords": [
+    "soft delete",
+    "borrado logico",
+    "deleted_at",
+    "recuperar borrado",
+    "papelera"
+  ],
+  "problem": "Borrar filas con DELETE de forma permanente rompe referencias (claves foraneas huerfanas), pierde historial para auditoria, y no se puede deshacer si un usuario borra algo por error. Es muy comun en prototipos porque DELETE es lo primero que se escribe.",
+  "solution": "Anadir una columna deleted_at (timestamp nullable) en vez de borrar filas. Todas las consultas normales filtran WHERE deleted_at IS NULL (via una vista o el ORM). Un borrado real (hard delete) solo se ejecuta en un job de limpieza aparte, tras un periodo de retencion, nunca en el flujo normal de la app.",
+  "stack": [
+    "Postgres",
+    "vista SQL o scope de ORM",
+    "job de limpieza programado"
+  ],
+  "source": "agente-ia"
+}
