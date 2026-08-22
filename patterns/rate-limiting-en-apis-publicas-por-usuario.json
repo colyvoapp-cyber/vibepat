@@ -7,7 +7,10 @@
     "limite de peticiones",
     "abuso de api",
     "throttling",
-    "demasiadas peticiones"
+    "demasiadas peticiones",
+    "demasiadas solicitudes",
+    "codigo 429",
+    "limitar peticiones"
   ],
   "problem": "Las APIs publicas sin limite de peticiones son vulnerables a abuso (scraping agresivo, ataques de fuerza bruta, un solo cliente acaparando recursos compartidos), y anadir limites despues de lanzar rompe a clientes existentes sin aviso.",
   "solution": "Implementar rate limiting con algoritmo de token bucket por API key o IP, guardado en Redis (no en memoria del proceso, para que funcione con multiples instancias). Devolver headers estandar (X-RateLimit-Remaining, Retry-After) desde el dia uno del lanzamiento, no anadirlo despues.",
