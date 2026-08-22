@@ -1,4 +1,10 @@
-import { reviewPatternSubmission, type ExistingPatternSummary } from "./verifier.js";
+import {
+  reviewPatternSubmission,
+  reviewPatternImprovement,
+  type ExistingPatternSummary,
+  type ImprovementProposal,
+} from "./verifier.js";
+import type { Pattern } from "./patterns.generated.js";
 
 const GITHUB_API = "https://api.github.com";
 const REPO = process.env.GITHUB_REPO ?? "colyvoapp-cyber/vibepat";
@@ -42,6 +48,59 @@ async function gh(path: string, init?: RequestInit) {
   return res.json();
 }
 
+async function createBranch(branch: string): Promise<void> {
+  const baseRef = (await gh(`/repos/${REPO}/git/ref/heads/${BASE_BRANCH}`)) as {
+    object: { sha: string };
+  };
+  await gh(`/repos/${REPO}/git/refs`, {
+    method: "POST",
+    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseRef.object.sha }),
+  });
+}
+
+async function putFile(
+  path: string,
+  branch: string,
+  contentObj: unknown,
+  message: string,
+  sha?: string
+): Promise<void> {
+  const content = Buffer.from(JSON.stringify(contentObj, null, 2) + "\n", "utf8").toString("base64");
+  await gh(`/repos/${REPO}/contents/${path}`, {
+    method: "PUT",
+    body: JSON.stringify({ message, content, branch, ...(sha ? { sha } : {}) }),
+  });
+}
+
+async function openPR(branch: string, title: string, body: string): Promise<{ html_url: string; number: number }> {
+  return (await gh(`/repos/${REPO}/pulls`, {
+    method: "POST",
+    body: JSON.stringify({ title, head: branch, base: BASE_BRANCH, body }),
+  })) as { html_url: string; number: number };
+}
+
+async function mergeOrComment(
+  prNumber: number,
+  branch: string,
+  review: { approved: boolean; reasoning: string }
+): Promise<boolean> {
+  if (review.approved) {
+    await gh(`/repos/${REPO}/pulls/${prNumber}/merge`, {
+      method: "PUT",
+      body: JSON.stringify({ merge_method: "squash" }),
+    });
+    await gh(`/repos/${REPO}/git/refs/heads/${branch}`, { method: "DELETE" }).catch(() => {});
+    return true;
+  }
+  await gh(`/repos/${REPO}/issues/${prNumber}/comments`, {
+    method: "POST",
+    body: JSON.stringify({
+      body: `Agente verificador: NO aprobado automaticamente.\n\nMotivo: ${review.reasoning}\n\nQueda pendiente de revision humana.`,
+    }),
+  });
+  return false;
+}
+
 export interface PatternSubmission {
   title: string;
   category: string;
@@ -61,16 +120,7 @@ export async function submitPatternPR(
   }
 
   const branch = `contribute/${id}`;
-
-  const baseRef = (await gh(`/repos/${REPO}/git/ref/heads/${BASE_BRANCH}`)) as {
-    object: { sha: string };
-  };
-  const baseSha = baseRef.object.sha;
-
-  await gh(`/repos/${REPO}/git/refs`, {
-    method: "POST",
-    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseSha }),
-  });
+  await createBranch(branch);
 
   const patternData = {
     id,
@@ -83,55 +133,26 @@ export async function submitPatternPR(
     source: "agente-ia",
   };
 
-  const content = Buffer.from(JSON.stringify(patternData, null, 2) + "\n", "utf8").toString("base64");
+  await putFile(`patterns/${id}.json`, branch, patternData, `Propuesta de patron: ${input.title}`);
 
-  await gh(`/repos/${REPO}/contents/patterns/${id}.json`, {
-    method: "PUT",
-    body: JSON.stringify({
-      message: `Propuesta de patron: ${input.title}`,
-      content,
-      branch,
-    }),
-  });
-
-  const pr = (await gh(`/repos/${REPO}/pulls`, {
-    method: "POST",
-    body: JSON.stringify({
-      title: `[Propuesta IA] ${input.title}`,
-      head: branch,
-      base: BASE_BRANCH,
-      body: [
-        "Patron propuesto automaticamente por un agente de IA conectado via MCP (`submit_pattern`).",
-        "",
-        `**Categoria:** ${input.category}`,
-        "",
-        "Revisado por el agente verificador automatico antes de fusionar.",
-      ].join("\n"),
-    }),
-  })) as { html_url: string; number: number };
+  const pr = await openPR(
+    branch,
+    `[Propuesta IA] ${input.title}`,
+    [
+      "Patron propuesto automaticamente por un agente de IA conectado via MCP (`submit_pattern`).",
+      "",
+      `**Categoria:** ${input.category}`,
+      "",
+      "Revisado por el agente verificador automatico antes de fusionar.",
+    ].join("\n")
+  );
 
   let merged = false;
   let reasoning = "";
-
   try {
     const review = await reviewPatternSubmission(input, existingPatterns);
     reasoning = review.reasoning;
-
-    if (review.approved) {
-      await gh(`/repos/${REPO}/pulls/${pr.number}/merge`, {
-        method: "PUT",
-        body: JSON.stringify({ merge_method: "squash" }),
-      });
-      await gh(`/repos/${REPO}/git/refs/heads/${branch}`, { method: "DELETE" }).catch(() => {});
-      merged = true;
-    } else {
-      await gh(`/repos/${REPO}/issues/${pr.number}/comments`, {
-        method: "POST",
-        body: JSON.stringify({
-          body: `Agente verificador: NO aprobado automaticamente.\n\nMotivo: ${review.reasoning}\n\nQueda pendiente de revision humana.`,
-        }),
-      });
-    }
+    merged = await mergeOrComment(pr.number, branch, review);
   } catch (err) {
     reasoning = `No se pudo completar la revision automatica: ${
       err instanceof Error ? err.message : String(err)
@@ -139,4 +160,61 @@ export async function submitPatternPR(
   }
 
   return { url: pr.html_url, id, merged, reasoning };
+}
+
+export async function improvePatternPR(
+  existing: Pattern,
+  proposal: ImprovementProposal
+): Promise<{ url: string; merged: boolean; reasoning: string }> {
+  const branch = `improve/${existing.id}-${Date.now().toString(36)}`;
+
+  const fileInfo = (await gh(
+    `/repos/${REPO}/contents/patterns/${existing.id}.json?ref=${BASE_BRANCH}`
+  )) as { sha: string };
+
+  await createBranch(branch);
+
+  const updated: Pattern = {
+    ...existing,
+    keywords: proposal.additionalKeywords
+      ? Array.from(new Set([...existing.keywords, ...proposal.additionalKeywords]))
+      : existing.keywords,
+    problem: proposal.revisedProblem ?? existing.problem,
+    solution: proposal.revisedSolution ?? existing.solution,
+    stack: proposal.revisedStack ?? existing.stack,
+  };
+
+  await putFile(
+    `patterns/${existing.id}.json`,
+    branch,
+    updated,
+    `Mejora de patron: ${existing.title}`,
+    fileInfo.sha
+  );
+
+  const pr = await openPR(
+    branch,
+    `[Mejora IA] ${existing.title}`,
+    [
+      "Mejora de un patron existente, propuesta automaticamente por un agente de IA conectado via MCP (`improve_pattern`).",
+      "",
+      `**Justificacion:** ${proposal.justification}`,
+      "",
+      "Revisado por el agente verificador automatico antes de fusionar.",
+    ].join("\n")
+  );
+
+  let merged = false;
+  let reasoning = "";
+  try {
+    const review = await reviewPatternImprovement(existing, proposal);
+    reasoning = review.reasoning;
+    merged = await mergeOrComment(pr.number, branch, review);
+  } catch (err) {
+    reasoning = `No se pudo completar la revision automatica: ${
+      err instanceof Error ? err.message : String(err)
+    }`;
+  }
+
+  return { url: pr.html_url, merged, reasoning };
 }

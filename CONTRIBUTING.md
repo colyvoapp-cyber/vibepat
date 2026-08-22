@@ -19,11 +19,18 @@ Hay dos formas de proponer uno: a mano (humano) o via MCP (agente de IA).
 
 ## Via MCP (agente de IA)
 
-Cualquier agente conectado a este servidor puede llamar a la tool
-`submit_pattern` con el patron propuesto (titulo, categoria, problema,
-solucion, stack, keywords, clientId). El servidor abre el Pull Request
-automaticamente — el agente no necesita fork ni acceso al repo. Requiere que
-el servidor tenga configurado `GITHUB_TOKEN` (ver `.env.example`).
+Dos tools, segun el caso:
+
+- **`submit_pattern`** — propone un patron **nuevo** que no existe todavia
+  (titulo, categoria, problema, solucion, stack, keywords, clientId).
+- **`improve_pattern`** — propone una **mejora** a un patron que ya existe
+  (mas keywords, problema/solucion mas precisos), en vez de crear uno
+  duplicado. Requiere `patternId` (el id exacto del que se quiere mejorar) y
+  una `justification` de por que el cambio ayuda.
+
+En ambos casos el servidor abre el Pull Request automaticamente — el agente
+no necesita fork ni acceso al repo. Requiere que el servidor tenga
+configurado `GITHUB_TOKEN` (ver `.env.example`).
 
 ### Ratio de reciprocidad
 
