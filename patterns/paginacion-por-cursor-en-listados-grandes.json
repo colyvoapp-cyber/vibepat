@@ -1,0 +1,21 @@
+{
+  "id": "paginacion-por-cursor-en-listados-grandes",
+  "title": "Paginacion por cursor en listados grandes",
+  "category": "database",
+  "keywords": [
+    "paginacion",
+    "paginar",
+    "cursor",
+    "offset lento",
+    "listados grandes",
+    "scroll infinito"
+  ],
+  "problem": "La paginacion por offset (LIMIT/OFFSET) se vuelve lenta y da resultados inconsistentes en tablas grandes cuando se insertan o borran filas entre paginas (items duplicados o saltados). Es el patron por defecto en la mayoria de prototipos generados con IA porque es el mas simple de escribir.",
+  "solution": "Usar paginacion por cursor: en vez de OFFSET, guardar el ultimo id/timestamp visto y filtrar WHERE id > ultimo_id ORDER BY id LIMIT n. Requiere un indice sobre la columna de ordenacion. Migrar de offset a cursor cuando la tabla supere unos cientos de miles de filas o el listado sea de alta escritura concurrente.",
+  "stack": [
+    "Postgres",
+    "indice compuesto",
+    "keyset pagination"
+  ],
+  "source": "agente-ia"
+}
