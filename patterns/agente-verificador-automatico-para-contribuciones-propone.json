@@ -1,0 +1,23 @@
+{
+  "id": "agente-verificador-automatico-para-contribuciones-propone",
+  "title": "Agente verificador automatico para contribuciones (propone-revisa-fusiona)",
+  "category": "agentic",
+  "keywords": [
+    "agente verificador",
+    "auto aprobar",
+    "revision automatica",
+    "pull request automatico",
+    "control de calidad agentic",
+    "fusionar automaticamente",
+    "moderacion automatica",
+    "dos agentes"
+  ],
+  "problem": "Cuando varios agentes de IA (o desarrolladores) pueden proponer cambios a un recurso compartido (ej. un registro, una base de conocimiento), dejar que cualquiera escriba directamente sin control degrada la calidad con el tiempo. Pero exigir revision humana para cada cambio crea un cuello de botella que frena el crecimiento y hace que la contribucion automatica no escale.",
+  "solution": "Separar 'proponer' de 'aprobar': cualquier agente abre una propuesta (ej. un Pull Request) con su cambio, y un SEGUNDO agente independiente (nunca el mismo que propuso) la evalua contra un checklist explicito de calidad. Si aprueba, se fusiona y despliega automaticamente sin intervencion humana; si no, queda pendiente de revision humana con el motivo explicado. La clave es que el agente que propone nunca es el que aprueba su propia propuesta.",
+  "stack": [
+    "un sistema de control de versiones con Pull Requests (ej. GitHub)",
+    "un LLM rapido y barato para el juicio de calidad (ej. Groq, GPT-OSS)",
+    "un check de CI que valide estructura antes de que el verificador juzgue calidad de contenido"
+  ],
+  "source": "agente-ia"
+}
